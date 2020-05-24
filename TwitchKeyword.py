@@ -49,7 +49,7 @@ class Keyword(commands.Bot):
                 initial_channels=[channel_name],
         )
 
-        self.keywords = {}
+        self._keywords = {}
 
     async def event_ready(self):
         print(f'Connection successful. | Logged in as {self.nick}')
@@ -61,16 +61,31 @@ class Keyword(commands.Bot):
         content = message.content
 
         if content in self.keywords:
-            self.loop.create_task(self.keywords[content]())
+
+            # Executing coroutine tied to this keyword
+            self.loop.create_task(self.keywords[content](message))
             content = colorize(content, "BLUE")
+
+    @property
+    def keywords(self):
+        """Getter for custom keywords"""
+        return self._keywords
 
         print(f'{colorize(str(message.timestamp), "GREEN")} {colorize(username, "BOLD")}: {content}')
 
-        await self.handle_commands(message)
+    @keywords.setter(self, bindings):
+        """ Setter for all custom keywords"""
+        if type(bindings) != dict:
+            raise ValueError('Wrong data type, must pass dictionary with tuples (str, coro).')
+        
+        self._keywords = bindings
 
-    def add_keyword(self, name: str, action: Coroutine) -> None:
+    def set_keyword(self, name: str, action: Coroutine) -> None:
         """
-        Method to add custom keywords to bot instance.
+        Method to define one custom keyword to bot instance.
+
+        One other way to set keywords is using its setter by
+        passing a dictionary of keywords and ther respective coroutines
 
         Parameters
         ------------
@@ -78,10 +93,16 @@ class Keyword(commands.Bot):
         name: str [Required]
             string that must be sent in chat to trigger coroutine
         action: coro [Required] 
-            coroutine to be executed when "name" is sent in chat
+            coroutine to be executed when "name" is sent in chat.
+
+            **Note**:
+                This coroutine's parameters must be in the form: (Message, a=, b=, c=, ...)
+                where Message is the message object got from the event_message callback
+                and a, b, c, etc are parameters **with** default values.
 
         Raises
         --------
+B
 
         ValueError
             name must be str
@@ -95,9 +116,21 @@ class Keyword(commands.Bot):
         if not inspect.iscoroutinefunction(action):
             raise ValueError('Action parameter must be coroutine')
 
-        self.keywords[name] = action
+        self._keywords[name] = action
+
+    def pop_keyword(self, name: str) -> None
+        """
+        Removes keyword from custom bindings
+
+        Parameters
+        ------------
+
+        name: str [Required]
+            name of the keyword to be removed
+
+        """
+        self._keywords.pop(name, None)
 
 if __name__ == '__main__':
     bot = Keyword()
     bot.run()
-
