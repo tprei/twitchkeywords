@@ -105,7 +105,6 @@ class Keyword(commands.Bot):
 
         Raises
         --------
-B
 
         ValueError
             name must be str
