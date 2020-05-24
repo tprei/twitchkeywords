@@ -22,10 +22,9 @@ def get_credentials() -> tuple:
     load_dotenv()
 
     irc_token = os.environ.get('TWITCH_OAUTH_PASS')
-    client_id = os.environ.get('TWITCH_CLIENT_ID')
     channel = os.environ.get('TWITCH_CHANNEL')
 
-    return irc_token, client_id, channel
+    return irc_token, channel
 
 class TwitchAuthError(Exception):
     """Raised when auth variables are not properly configured"""
@@ -35,15 +34,14 @@ class Keyword(commands.Bot):
     """Twitch bot with support to custom keywords"""
 
     def __init__(self):
-        irc, client, channel_name = get_credentials()
+        irc, channel_name = get_credentials()
 
-        if not irc or not client or not channel_name:
+        if not irc or not channel_name:
             raise TwitchAuthError(".env configuration file not properly configured.")
 
         # Connect to channel
         super().__init__(
                 irc_token=irc,
-                client_id=client,
                 nick=channel_name,
                 prefix='!',
                 initial_channels=[channel_name],
@@ -133,3 +131,6 @@ B
 
         """
         self._keywords.pop(name, None)
+
+bot = Keyword()
+bot.run()
