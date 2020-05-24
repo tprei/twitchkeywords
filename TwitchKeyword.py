@@ -133,6 +133,3 @@ B
 
         """
         self._keywords.pop(name, None)
-
-bot = Keyword()
-bot.run()
