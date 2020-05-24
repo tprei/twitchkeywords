@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from twitchio.ext import commands
 from typing import Coroutine
 
+import asyncio
 import inspect
 import os
 
@@ -52,19 +53,21 @@ class Keyword(commands.Bot):
         self._keywords = {}
 
     async def event_ready(self):
+        print(f'_________________________________________________\n')
         print(f'Connection successful. | Logged in as {self.nick}')
-        print(f'_________________________________________________')
-        print('')
+        print(f'_________________________________________________\n')
+        print(f'Chat log')
 
     async def event_message(self, message):
         username = message.author.name
         content = message.content
 
         if content in self.keywords:
-
             # Executing coroutine tied to this keyword
             self.loop.create_task(self.keywords[content](message))
             content = colorize(content, "BLUE")
+
+        print(f'{colorize(str(message.timestamp), "GREEN")} {colorize(username, "BOLD")}: {content}')
 
     @property
     def keywords(self):
@@ -73,7 +76,8 @@ class Keyword(commands.Bot):
 
         print(f'{colorize(str(message.timestamp), "GREEN")} {colorize(username, "BOLD")}: {content}')
 
-    @keywords.setter(self, bindings):
+    @keywords.setter
+    def keywords(self, bindings):
         """ Setter for all custom keywords"""
         if type(bindings) != dict:
             raise ValueError('Wrong data type, must pass dictionary with tuples (str, coro).')
@@ -118,7 +122,7 @@ B
 
         self._keywords[name] = action
 
-    def pop_keyword(self, name: str) -> None
+    def pop_keyword(self, name: str) -> None:
         """
         Removes keyword from custom bindings
 
@@ -130,7 +134,3 @@ B
 
         """
         self._keywords.pop(name, None)
-
-if __name__ == '__main__':
-    bot = Keyword()
-    bot.run()
