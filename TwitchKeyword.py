@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 from twitchio.ext import commands
 from typing import Coroutine
 
-import asyncio
 import inspect
 import os
 
