@@ -43,6 +43,7 @@ class Keyword(commands.Bot):
         # Connect to channel
         super().__init__(
                 irc_token=irc,
+                client_id=client,
                 nick=channel_name,
                 prefix='!',
                 initial_channels=[channel_name],
