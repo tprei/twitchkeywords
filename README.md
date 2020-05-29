@@ -4,6 +4,14 @@ A Twitch bot that handles commands and other features through the use of custom 
 
 ## Installation
 
+### Installing from pip:
+
+`pip install twitchkeywords --upgrade`
+
+**OR**
+
+### By cloning the repository:
+
 Clone this repository
 
 `git clone https://github.com/tpreischadt/Twitch-Keywords.git`
