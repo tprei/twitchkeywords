@@ -15,7 +15,8 @@ setup(
   install_requires =[
       "aiohttp",
       "asyncio",
-      "twitchio"
+      "twitchio",
+      "dotenv"
   ],
   classifiers=[
     'Development Status :: 3 - Alpha',
