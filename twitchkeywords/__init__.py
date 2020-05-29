@@ -1,1 +1,1 @@
-from TwitchKeyword import Keyword
+from twitchkeywords.TwitchKeyword import Keyword
