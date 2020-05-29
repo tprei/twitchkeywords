@@ -3,6 +3,7 @@ from twitchio.ext import commands
 from typing import Coroutine
 
 import inspect
+import logging
 import os
 
 colors = {
@@ -51,12 +52,6 @@ class Keyword(commands.Bot):
 
         self._keywords = {}
 
-    async def event_ready(self):
-        print(f'_________________________________________________\n')
-        print(f'Connection successful. | Logged in as {self.nick}')
-        print(f'_________________________________________________\n')
-        print(f'Chat log')
-
     async def event_message(self, message):
         username = message.author.name
         content = message.content
@@ -72,8 +67,6 @@ class Keyword(commands.Bot):
     def keywords(self):
         """Getter for custom keywords"""
         return self._keywords
-
-        print(f'{colorize(str(message.timestamp), "GREEN")} {colorize(username, "BOLD")}: {content}')
 
     @keywords.setter
     def keywords(self, bindings):
