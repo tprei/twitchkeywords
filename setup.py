@@ -16,7 +16,7 @@ setup(
       "aiohttp",
       "asyncio",
       "twitchio",
-      "dotenv"
+      "python-dotenv"
   ],
   classifiers=[
     'Development Status :: 3 - Alpha',
