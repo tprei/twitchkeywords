@@ -4,13 +4,13 @@ from distutils.core import setup
 setup(
   name = 'twitchkeywords',
   packages = ['twitchkeywords'],
-  version = '0.1.3',
+  version = '0.1.3.2',
   license='MIT',
   description = 'Twitch bot that handles commands and other features through the use of custom keywords.',
   author = 'Thiago Preischadt',
   author_email = 'thiagopreischadt@gmail.com',
   url = 'https://github.com/tpreischadt/twitchkeywords',
-  download_url = 'https://github.com/tpreischadt/twitchkeywords/archive/v0.1.3.tar.gz',
+  download_url = 'https://github.com/tpreischadt/twitchkeywords/archive/v0.1.3.2.tar.gz',
   keywords = ['twitch', 'keywords', 'bot'],
   install_requires =[
       "aiohttp",
