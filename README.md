@@ -50,4 +50,12 @@ Here's what the program's log will look like. Notice how when some message invok
 
 ![log](https://i.imgur.com/ObSO6w4.png)
 
-#### For more advanced usage, you could create a class extending the Keywords class, which is a child class of TwitchIO's bot class. Nonetheless, I suggest not to override the on_message method, since that's what's handling the keywords/bindings coroutines invokations.
+## Other features
+
+- Support for prefixes (bind coroutines to every message that starts with a prefix)
+    - See Keyword.set_prefix and Keyword.prefix_keywords
+    - This allows the use of commands, but in a more generic/automated way, for example, you can define hundreds of commands following a specific rule.
+
+- Support for suffixes and "contains" keywords aswell.
+
+**P.S.:** For more advanced usage, you could create a class extending the Keywords class, which is a child class of TwitchIO's bot class. Nonetheless, I suggest to not completely override the event_message method (at least call the parents' method), since that's what's handling the keywords/bindings coroutines invokations.
