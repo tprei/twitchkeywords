@@ -50,38 +50,100 @@ class Keyword(commands.Bot):
                 initial_channels=[channel_name],
         )
 
-        self._keywords = {}
+        self._keywords = dict()
+        self._prefixes = dict()
+        self._suffixes = dict()
+        self._contains = dict()
 
     async def event_message(self, message):
         username = message.author.name
         content = message.content
+        color = False
 
-        if content in self.keywords:
+        # Executing keyword bindings
+        if content in self._keywords:
             # Executing coroutine tied to this keyword
-            self.loop.create_task(self.keywords[content](message))
+            await self._keywords[content](message)
+            color = True
+
+        # Executing prefixes bindings
+        for name, task in self._prefixes.items():
+            if content.startswith(name):
+                await task(message)
+                color = True
+
+        # Executing suffixes bindings
+        for name, task in self._suffixes.items():
+            if content.endswith(name):
+                await task(message)
+                color = True
+
+        # Executing "contains" bindings
+        for name, task in self._contains.items():
+            if name in content:
+                await task(message)
+                color = True
+
+        if color:
             content = colorize(content, "BLUE")
 
         print(f'{colorize(str(message.timestamp), "GREEN")} {colorize(username, "BOLD")}: {content}')
 
     @property
     def keywords(self):
-        """Getter for custom keywords"""
+        """Getter for keywords"""
         return self._keywords
 
     @keywords.setter
     def keywords(self, bindings):
-        """ Setter for all custom keywords"""
+        """Setter for keywords"""
         if type(bindings) != dict:
             raise ValueError('Wrong data type, must pass dictionary with tuples (str, coro).')
-        
+                
         self._keywords = bindings
+
+    @property
+    def prefix_keywords(self):
+        """Getter for prefixes"""
+        return self._prefixes
+
+    @prefix_keywords.setter
+    def prefix_keywords(self, bindings):
+        """Setter for prefixes"""
+        if type(bindings) != dict:
+            raise ValueError('Wrong data type, must pass dictionary with tuples (str, coro).')
+                
+        self._prefixes = bindings
+
+    @property
+    def suffix_keywords(self):
+        """Getter for suffixes"""
+        return self._suffixes
+
+    @suffix_keywords.setter
+    def suffix_keywords(self, bindings):
+        """Setter for suffixes"""
+        if type(bindings) != dict:
+            raise ValueError('Wrong data type, must pass dictionary with tuples (str, coro).')
+                
+        self._suffixes = bindings
+
+    @property
+    def contains_keywords(self):
+        """Getter for contains"""
+        return self._contains
+
+    @contains_keywords.setter
+    def contains_keywords(self, bindings):
+        """Setter for contains"""
+        if type(bindings) != dict:
+            raise ValueError('Wrong data type, must pass dictionary with tuples (str, coro).')
+                
+        self._contains = bindings
 
     def set_keyword(self, name: str, action: Coroutine) -> None:
         """
-        Method to define one custom keyword to bot instance.
-
-        One other way to set keywords is using its setter by
-        passing a dictionary of keywords and ther respective coroutines
+        Associates keyword with coroutine
 
         Parameters
         ------------
@@ -89,12 +151,11 @@ class Keyword(commands.Bot):
         name: str [Required]
             string that must be sent in chat to trigger coroutine
         action: coro [Required] 
-            coroutine to be executed when "name" is sent in chat.
+            coroutine to be invoked when name is sent in chat.
 
-            **Note**:
-                This coroutine's parameters must be in the form: (Message, a=, b=, c=, ...)
-                where Message is the message object got from the event_message callback
-                and a, b, c, etc are parameters **with** default values.
+            **Note**: 
+            Coroutine must take exactly one parameter with no default values, which is the message received.
+            All other parameters **must** be default-valued parameters.
 
         Raises
         --------
@@ -113,15 +174,101 @@ class Keyword(commands.Bot):
 
         self._keywords[name] = action
 
-    def pop_keyword(self, name: str) -> None:
+    def set_prefix(self, name: str, action: Coroutine) -> None:
         """
-        Removes keyword from custom bindings
+        Associates prefix with coroutine
 
         Parameters
         ------------
 
         name: str [Required]
-            name of the keyword to be removed
+            prefix to be associated with a coroutine
+        action: coro [Required] 
+            coroutine to be invoked when that certain prefix is seen in chat.
+
+            **Note**: 
+            Coroutine must take exactly one parameter with no default values, which is the message received.
+            All other parameters **must** be default-valued parameters.
+
+        Raises
+        --------
+
+        ValueError
+            name must be str
+            action must be coroutine function
 
         """
-        self._keywords.pop(name, None)
+        
+        if type(name) != str:
+            raise ValueError('Name parameter must be str')
+
+        if not inspect.iscoroutinefunction(action):
+            raise ValueError('Action parameter must be coroutine')
+
+        self._prefixes[name] = action
+
+    def set_suffix(self, name: str, action: Coroutine) -> None:
+        """
+        Associates suffix with coroutine
+
+        Parameters
+        ------------
+
+        name: str [Required]
+            suffix that must be seen in chat to invoke coroutine
+        action: coro [Required] 
+            coroutine to be invoked when suffix is seen in chat.
+
+            **Note**: 
+            Coroutine must take exactly one parameter with no default values, which is the message received.
+            All other parameters **must** be default-valued parameters.
+
+        Raises
+        --------
+
+        ValueError
+            name must be str
+            action must be coroutine function
+
+        """
+        
+        if type(name) != str:
+            raise ValueError('Name parameter must be str')
+
+        if not inspect.iscoroutinefunction(action):
+            raise ValueError('Action parameter must be coroutine')
+
+        self._suffixes[name] = action
+
+    def set_contains(self, name: str, action: Coroutine) -> None:
+        """
+        Associates all messages that contain certain string with a coroutine
+
+        Parameters
+        ------------
+
+        name: str [Required]
+            string that must be inside a message sent in chat to trigger coroutine
+        action: coro [Required] 
+            coroutine to be invoked when name is sent in chat.
+
+            **Note**: 
+            Coroutine must take exactly one parameter with no default values, which is the message received.
+            All other parameters **must** be default-valued parameters.
+
+        Raises
+        --------
+
+        ValueError
+            name must be str
+            action must be coroutine function
+
+        """
+        
+        if type(name) != str:
+            raise ValueError('Name parameter must be str')
+
+        if not inspect.iscoroutinefunction(action):
+            raise ValueError('Action parameter must be coroutine')
+
+        self._contains[name] = action
