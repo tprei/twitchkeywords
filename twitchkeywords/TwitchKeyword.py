@@ -47,7 +47,7 @@ class Keyword(commands.Bot):
                 client_id=client,
                 nick=channel_name,
                 prefix='!',
-                initial_channels=[f"#channel_name"],
+                initial_channels=[f"#{channel_name}"],
         )
 
         self._keywords = dict()
