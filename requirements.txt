@@ -30,6 +30,6 @@ twitchio==1.1.0
 typing-extensions==3.7.4.2
 urllib3==1.25.9
 webencodings==0.5.1
-websockets==8.1
+websockets==9.1
 yarl==1.4.2
 zipp==3.1.0
